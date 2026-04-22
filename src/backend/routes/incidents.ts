@@ -129,6 +129,10 @@ router.patch('/:id', async (req: Request, res: Response) => {
       res.status(400).json({ error: 'Owner not found' });
       return;
     }
+    if (err instanceof Error && err.message.includes('P1 incidents require')) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
     console.error('Error updating incident:', err);
     res.status(500).json({ error: 'Failed to update incident' });
   }

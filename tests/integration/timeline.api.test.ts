@@ -119,4 +119,67 @@ describe('PATCH /api/incidents/:id creates timeline entries', () => {
 
     expect(res.body.error).toBe('Owner not found');
   });
+
+  it('blocks P1 → Investigating without owner', async () => {
+    // Create a fresh P1 incident with no owner
+    const createRes = await agent.post('/api/incidents').send({
+      title: 'P1 no-owner test',
+      severity: 'P1',
+      affected_service: 'test',
+    });
+    const p1Id = createRes.body.id;
+
+    const res = await agent
+      .patch(`/api/incidents/${p1Id}`)
+      .send({ status: 'Investigating' })
+      .expect(400);
+
+    expect(res.body.error).toContain('P1 incidents require an assigned owner');
+  });
+
+  it('allows P1 → Investigating when owner is set in same request', async () => {
+    const createRes = await agent.post('/api/incidents').send({
+      title: 'P1 with-owner test',
+      severity: 'P1',
+      affected_service: 'test',
+    });
+    const p1Id = createRes.body.id;
+
+    await agent
+      .patch(`/api/incidents/${p1Id}`)
+      .send({ status: 'Investigating', owner_id: 2 })
+      .expect(200);
+  });
+
+  it('allows P1 → Investigating when owner was previously assigned', async () => {
+    const createRes = await agent.post('/api/incidents').send({
+      title: 'P1 pre-owned test',
+      severity: 'P1',
+      affected_service: 'test',
+    });
+    const p1Id = createRes.body.id;
+
+    // Assign owner first
+    await agent.patch(`/api/incidents/${p1Id}`).send({ owner_id: 1 }).expect(200);
+
+    // Now transition to Investigating
+    await agent
+      .patch(`/api/incidents/${p1Id}`)
+      .send({ status: 'Investigating' })
+      .expect(200);
+  });
+
+  it('allows non-P1 → Investigating without owner', async () => {
+    const createRes = await agent.post('/api/incidents').send({
+      title: 'P3 no-owner test',
+      severity: 'P3',
+      affected_service: 'test',
+    });
+    const p3Id = createRes.body.id;
+
+    await agent
+      .patch(`/api/incidents/${p3Id}`)
+      .send({ status: 'Investigating' })
+      .expect(200);
+  });
 });

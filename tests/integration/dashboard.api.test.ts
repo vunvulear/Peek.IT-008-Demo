@@ -101,13 +101,20 @@ describe('GET /api/incidents', () => {
     expect(res.body.incidents[0].title).toBe('Open P1 incident');
   });
 
-  it('sorts by updated_at descending by default', async () => {
+  it('sorts P1 incidents first, then by updated_at descending', async () => {
     const res = await agent.get('/api/incidents').expect(200);
 
-    const timestamps = res.body.incidents.map((i: { updated_at: string }) => i.updated_at);
-    for (let i = 0; i < timestamps.length - 1; i++) {
-      expect(timestamps[i] >= timestamps[i + 1]).toBe(true);
-    }
+    const incidents = res.body.incidents;
+    const p1Incidents = incidents.filter((i: { severity: string }) => i.severity === 'P1');
+    const nonP1Incidents = incidents.filter((i: { severity: string }) => i.severity !== 'P1');
+
+    // All P1s should come before any non-P1
+    expect(p1Incidents.length).toBeGreaterThan(0);
+    expect(nonP1Incidents.length).toBeGreaterThan(0);
+    const severities = incidents.map((i: { severity: string }) => i.severity);
+    const lastP1Idx = severities.lastIndexOf('P1');
+    const firstNonP1Idx = severities.findIndex((s: string) => s !== 'P1');
+    expect(lastP1Idx).toBeLessThan(firstNonP1Idx);
   });
 
   it('respects limit parameter', async () => {

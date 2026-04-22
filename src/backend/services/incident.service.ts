@@ -151,6 +151,16 @@ export async function updateIncident(
     }
   }
 
+  // P1 → Investigating requires an owner
+  if (
+    input.status === 'Investigating' &&
+    existing.severity === 'P1' &&
+    existing.owner_id === null &&
+    input.owner_id === undefined
+  ) {
+    throw new Error('P1 incidents require an assigned owner before moving to Investigating');
+  }
+
   // Track changes for timeline
   const changes: { type: string; content: string }[] = [];
 
@@ -225,7 +235,8 @@ export async function listIncidents(options: ListIncidentsOptions = {}): Promise
     params.push(...options.severity);
   }
 
-  const orderBy = options.sort === 'created_at' ? 'i.created_at DESC' : 'i.updated_at DESC';
+  const timeSort = options.sort === 'created_at' ? 'i.created_at DESC' : 'i.updated_at DESC';
+  const orderBy = `CASE WHEN i.severity = 'P1' THEN 0 ELSE 1 END, ${timeSort}`;
   const limit = options.limit || 50;
   const offset = options.offset || 0;
 

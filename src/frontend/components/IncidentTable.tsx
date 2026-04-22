@@ -42,7 +42,11 @@ export function IncidentTable({ incidents, loading }: IncidentTableProps) {
             <tr
               key={inc.id}
               onClick={() => navigate(`/incidents/${inc.id}`)}
-              className="hover:bg-blue-50 cursor-pointer transition-colors"
+              className={`cursor-pointer transition-colors ${
+                inc.severity === 'P1'
+                  ? 'bg-red-50 border-l-4 border-red-500 hover:bg-red-100'
+                  : 'hover:bg-blue-50'
+              }`}
             >
               <td className="px-4 py-3 text-sm font-mono text-gray-600">{inc.incident_id}</td>
               <td className="px-4 py-3 text-sm font-medium text-gray-900 max-w-xs truncate">{inc.title}</td>

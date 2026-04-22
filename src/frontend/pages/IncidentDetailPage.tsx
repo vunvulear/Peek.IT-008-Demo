@@ -53,6 +53,17 @@ export function IncidentDetailPage() {
   async function handleStatusChange(newStatus: Status) {
     if (!incident) return;
     setUpdateError('');
+
+    // P1 guard: block Investigating without owner
+    if (
+      newStatus === 'Investigating' &&
+      incident.severity === 'P1' &&
+      !incident.owner_id
+    ) {
+      setUpdateError('P1 incidents require an assigned owner before moving to Investigating');
+      return;
+    }
+
     try {
       const updated = await updateIncident(incidentId, { status: newStatus });
       setIncident(updated);
@@ -126,6 +137,9 @@ export function IncidentDetailPage() {
             <span className="text-sm font-mono text-gray-500">{incident.incident_id}</span>
             <SeverityBadge severity={incident.severity} />
             <StatusBadge status={incident.status} />
+            {incident.severity === 'P1' && (
+              <span className="px-2 py-0.5 text-xs font-bold text-white bg-red-600 rounded-full animate-pulse">CRITICAL</span>
+            )}
           </div>
           <h2 className="text-xl font-bold text-gray-900 mt-1">{incident.title}</h2>
         </div>

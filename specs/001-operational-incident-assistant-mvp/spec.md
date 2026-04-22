@@ -138,12 +138,13 @@ As a team member, I need to identify myself so the system can record who reporte
 
 - **FR-001**: System MUST allow creating incidents with: title (required, max 200 chars), description (optional, max 10,000 chars), severity (P1–P4, required), affected service (required, free text).
 - **FR-002**: System MUST assign a unique auto-incrementing ID (INC-001, INC-002…) to each incident upon creation.
-- **FR-003**: System MUST enforce status values: Open, Investigating, Resolved, Closed. Any-to-any transitions are allowed; each transition is logged.
+- **FR-003**: System MUST enforce status values: Open, Investigating, Resolved, Closed. Any-to-any transitions are allowed EXCEPT: P1 incidents MUST have an assigned owner before transitioning to Investigating. Each transition is logged.
 - **FR-004**: System MUST allow assigning and reassigning a single owner (existing user) to an incident.
 - **FR-005**: System MUST maintain an append-only timeline per incident, recording every status change, assignment, and user note with actor + UTC timestamp.
 - **FR-006**: System MUST provide a dashboard listing incidents with columns: ID, title, severity, status, owner, affected service, last updated.
 - **FR-007**: Dashboard MUST support filtering by status (multi-select) and severity (multi-select).
-- **FR-008**: Dashboard MUST support sorting by last updated (default: newest first).
+- **FR-008**: Dashboard MUST sort P1 incidents above all other severities within the current sort order (default: last updated, newest first).
+- **FR-012**: Dashboard and detail view MUST visually distinguish P1 incidents with prominent styling (color highlight, badge).
 - **FR-009**: System MUST validate all required fields and return clear error messages on invalid input.
 - **FR-010**: System MUST support simple username-based authentication (login with username, no password for MVP).
 - **FR-011**: System MUST provide an incident detail view showing all fields and the full timeline.
