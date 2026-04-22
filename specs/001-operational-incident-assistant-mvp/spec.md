@@ -161,7 +161,7 @@ As a team member, I need to identify myself so the system can record who reporte
 ### Key Entities
 
 - **Incident**: Core entity. Attributes: id, title, description, severity (P1–P4), status (Open/Investigating/Resolved/Closed), owner, affected_service, created_by, created_at, updated_at.
-- **Timeline Entry**: Immutable log entry. Attributes: id, incident_id, actor, action_type (status_change/assignment/note), content, created_at.
+- **Timeline Entry**: Immutable log entry. Attributes: id, incident_id, actor, action_type (created/status_change/assignment/note), content, created_at.
 - **User**: Team member. Attributes: id, username, display_name.
 
 ## Success Criteria *(mandatory)*

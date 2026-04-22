@@ -11,14 +11,15 @@ Build a lightweight web application for engineering teams to report, triage, ass
 **Language/Version**: TypeScript 5.x (frontend + backend)  
 **Backend**: Node.js 20+ with Express.js  
 **Frontend**: React 18 with Vite, TailwindCSS, shadcn/ui  
-**Storage**: SQLite (file-based; zero-config, sufficient for ≤50 users / 1K incidents)  
-**ORM**: Drizzle ORM (lightweight, type-safe, SQLite-native)  
+**Storage**: SQLite via sql.js (pure JS/WASM, no native compilation needed)  
+**ORM**: Drizzle ORM with sql.js driver (lightweight, type-safe)  
 **Testing**: Vitest (unit + integration), Playwright (E2E)  
 **Target Platform**: Desktop browsers (Chrome, Firefox, Edge)  
 **Project Type**: Full-stack web application (monorepo)  
 **Performance Goals**: Dashboard API ≤200ms for 100 incidents  
 **Constraints**: Single deployable unit, no external service dependencies  
-**Scale/Scope**: ≤50 concurrent users, ≤1,000 active incidents
+**Scale/Scope**: ≤50 concurrent users, ≤1,000 active incidents  
+**Sessions**: cookie-session (signed, in-memory); sessions lost on restart — acceptable for MVP
 
 ### Technology Decisions
 
