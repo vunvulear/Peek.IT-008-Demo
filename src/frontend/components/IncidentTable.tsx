@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import type { Incident } from '../lib/types';
 import { SeverityBadge, StatusBadge } from './StatusBadge';
+import { TableSkeleton } from './Skeleton';
 
 interface IncidentTableProps {
   incidents: Incident[];
@@ -11,11 +12,7 @@ export function IncidentTable({ incidents, loading }: IncidentTableProps) {
   const navigate = useNavigate();
 
   if (loading) {
-    return (
-      <div className="bg-white rounded-lg border border-gray-200 p-8 text-center text-gray-500">
-        Loading incidents...
-      </div>
-    );
+    return <TableSkeleton rows={5} />;
   }
 
   if (incidents.length === 0) {

@@ -6,6 +6,11 @@ const DB_PATH = path.resolve(process.cwd(), 'src', 'data', 'incidents.db');
 
 let db: Database | null = null;
 
+/** Inject a pre-built Database instance (used for testing). */
+export function setDb(instance: Database): void {
+  db = instance;
+}
+
 export async function getDb(): Promise<Database> {
   if (db) return db;
 
@@ -28,6 +33,7 @@ export async function getDb(): Promise<Database> {
 
 export function saveDb(): void {
   if (!db) return;
+  if (process.env.NODE_ENV === 'test') return; // skip disk writes in tests
   const data = db.export();
   const buffer = Buffer.from(data);
   const dir = path.dirname(DB_PATH);

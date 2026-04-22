@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import type { Incident, TimelineEntry, User, Status, Severity } from '../lib/types';
 import { getIncident, getTimeline, getUsers, updateIncident, addTimelineNote, ApiResponseError } from '../lib/api';
 import { SeverityBadge, StatusBadge } from '../components/StatusBadge';
+import { DetailSkeleton } from '../components/Skeleton';
 import { IncidentTimeline } from '../components/IncidentTimeline';
 
 const STATUSES: Status[] = ['Open', 'Investigating', 'Resolved', 'Closed'];
@@ -99,7 +100,7 @@ export function IncidentDetailPage() {
   }
 
   if (loadingIncident) {
-    return <div className="text-gray-500 py-8 text-center">Loading incident...</div>;
+    return <DetailSkeleton />;
   }
 
   if (!incident) {

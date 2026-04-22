@@ -1,4 +1,5 @@
 import type { TimelineEntry, ActionType } from '../lib/types';
+import { TimelineSkeleton } from './Skeleton';
 
 const ACTION_ICONS: Record<ActionType, string> = {
   created: '🟢',
@@ -23,7 +24,7 @@ interface IncidentTimelineProps {
 
 export function IncidentTimeline({ entries, loading }: IncidentTimelineProps) {
   if (loading) {
-    return <div className="text-sm text-gray-400 py-4">Loading timeline...</div>;
+    return <TimelineSkeleton />;
   }
 
   if (entries.length === 0) {
