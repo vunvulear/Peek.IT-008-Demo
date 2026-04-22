@@ -13,12 +13,15 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({
+  origin: process.env.ALLOWED_ORIGIN || 'http://localhost:5173',
+  credentials: true,
+}));
 app.use(express.json());
 app.use(
   cookieSession({
     name: 'session',
-    keys: ['incident-assistant-secret-key'],
+    keys: [process.env.SESSION_SECRET || 'incident-assistant-dev-key'],
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
   })
 );

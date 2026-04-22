@@ -35,6 +35,11 @@ router.post('/:id/timeline', async (req: Request, res: Response) => {
       return;
     }
 
+    if (content.length > 10000) {
+      res.status(400).json({ error: 'Content must be 10,000 characters or less' });
+      return;
+    }
+
     const entry = await addNote(id, req.session!.userId!, content);
     res.status(201).json(entry);
   } catch (err: unknown) {

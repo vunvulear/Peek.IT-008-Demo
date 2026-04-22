@@ -55,6 +55,8 @@ export function validateCreateInput(input: CreateIncidentInput): string[] {
 
   if (!input.affected_service || input.affected_service.trim().length === 0) {
     errors.push('Affected service is required');
+  } else if (input.affected_service.length > 200) {
+    errors.push('Affected service must be 200 characters or less');
   }
 
   return errors;

@@ -23,8 +23,8 @@ router.get('/', async (req: Request, res: Response) => {
       : undefined;
 
     const sort = (req.query.sort as string) || 'updated_at';
-    const limit = parseInt(req.query.limit as string) || 50;
-    const offset = parseInt(req.query.offset as string) || 0;
+    const limit = Math.max(1, Math.min(100, parseInt(req.query.limit as string) || 50));
+    const offset = Math.max(0, parseInt(req.query.offset as string) || 0);
 
     const result = await listIncidents({ status, severity, sort, limit, offset });
     res.json(result);
@@ -96,10 +96,16 @@ router.patch('/:id', async (req: Request, res: Response) => {
       return;
     }
 
+    const rawOwnerId = req.body.owner_id;
+    if (rawOwnerId !== undefined && (!Number.isInteger(rawOwnerId) || rawOwnerId < 1)) {
+      res.status(400).json({ error: 'Validation failed', details: ['owner_id must be a positive integer'] });
+      return;
+    }
+
     const input = {
       status: req.body.status,
       severity: req.body.severity,
-      owner_id: req.body.owner_id,
+      owner_id: rawOwnerId as number | undefined,
     };
 
     const errors = validateUpdateInput(input);
