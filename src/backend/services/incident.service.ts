@@ -163,7 +163,7 @@ export async function updateIncident(
   if (input.severity !== undefined && input.severity !== existing.severity) {
     db.run('UPDATE incidents SET severity = ?, updated_at = datetime(\'now\') WHERE id = ?', [input.severity, id]);
     changes.push({
-      type: 'status_change',
+      type: 'severity_change',
       content: `Severity changed from ${existing.severity} to ${input.severity}`,
     });
   }

@@ -1,6 +1,6 @@
 export type Severity = 'P1' | 'P2' | 'P3' | 'P4';
 export type Status = 'Open' | 'Investigating' | 'Resolved' | 'Closed';
-export type ActionType = 'created' | 'status_change' | 'assignment' | 'note';
+export type ActionType = 'created' | 'status_change' | 'severity_change' | 'assignment' | 'note';
 
 export interface User {
   id: number;

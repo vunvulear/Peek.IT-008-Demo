@@ -53,7 +53,7 @@ export function IncidentTable({ incidents, loading }: IncidentTableProps) {
               <td className="px-4 py-3"><StatusBadge status={inc.status} /></td>
               <td className="px-4 py-3 text-sm text-gray-600">{inc.owner_name || '—'}</td>
               <td className="px-4 py-3 text-sm text-gray-600">{inc.affected_service}</td>
-              <td className="px-4 py-3 text-sm text-gray-400">{new Date(inc.updated_at + 'Z').toLocaleString()}</td>
+              <td className="px-4 py-3 text-sm text-gray-400">{new Date(inc.updated_at + 'Z').toLocaleString('en-US', { timeZone: 'UTC' })} UTC</td>
             </tr>
           ))}
         </tbody>

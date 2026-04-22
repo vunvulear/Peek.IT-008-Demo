@@ -162,7 +162,7 @@ export function IncidentDetailPage() {
             <div>
               <label className="text-xs text-gray-500">Created At</label>
               <p className="text-sm text-gray-800 mt-0.5">
-                {new Date(incident.created_at + 'Z').toLocaleString()}
+                {new Date(incident.created_at + 'Z').toLocaleString('en-US', { timeZone: 'UTC' })} UTC
               </p>
             </div>
           </div>

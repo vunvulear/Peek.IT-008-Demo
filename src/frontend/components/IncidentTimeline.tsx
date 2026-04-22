@@ -3,6 +3,7 @@ import type { TimelineEntry, ActionType } from '../lib/types';
 const ACTION_ICONS: Record<ActionType, string> = {
   created: '🟢',
   status_change: '🔄',
+  severity_change: '⚡',
   assignment: '👤',
   note: '📝',
 };
@@ -10,6 +11,7 @@ const ACTION_ICONS: Record<ActionType, string> = {
 const ACTION_LABELS: Record<ActionType, string> = {
   created: 'Created',
   status_change: 'Status Change',
+  severity_change: 'Severity Change',
   assignment: 'Assignment',
   note: 'Note',
 };
@@ -40,7 +42,7 @@ export function IncidentTimeline({ entries, loading }: IncidentTimelineProps) {
               <span className="text-sm font-medium text-gray-900">{entry.actor_name}</span>
               <span className="text-xs text-gray-400 uppercase">{ACTION_LABELS[entry.action_type]}</span>
               <span className="text-xs text-gray-400">
-                {new Date(entry.created_at + 'Z').toLocaleString()}
+                {new Date(entry.created_at + 'Z').toLocaleString('en-US', { timeZone: 'UTC' })} UTC
               </span>
             </div>
             <p className="text-sm text-gray-700 mt-0.5">{entry.content}</p>

@@ -53,7 +53,7 @@ router.get('/me', (req: Request, res: Response) => {
 });
 
 // GET /api/users — list all users (for owner dropdown)
-router.get('/users', async (_req: Request, res: Response) => {
+router.get('/', async (_req: Request, res: Response) => {
   const db = await getDb();
   const result = db.exec('SELECT id, username, display_name FROM users ORDER BY display_name');
 

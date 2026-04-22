@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS timeline_entries (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   incident_id INTEGER NOT NULL REFERENCES incidents(id),
   actor_id INTEGER NOT NULL REFERENCES users(id),
-  action_type TEXT NOT NULL CHECK(action_type IN ('created','status_change','assignment','note')),
+  action_type TEXT NOT NULL CHECK(action_type IN ('created','status_change','severity_change','assignment','note')),
   content TEXT NOT NULL,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );

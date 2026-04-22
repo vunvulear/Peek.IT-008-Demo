@@ -50,7 +50,7 @@ export const getMe = () =>
 
 // Users
 export const getUsers = () =>
-  request<User[]>('/users/users');
+  request<User[]>('/users');
 
 // Incidents
 export const getIncidents = (params?: {
