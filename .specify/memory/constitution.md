@@ -1,50 +1,47 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# Operational Incident Assistant Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Simplicity First
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+Every feature MUST solve one clear problem. No feature creep — if it isn't needed for reporting, triaging, assigning, or tracking an incident, it doesn't belong in MVP. Prefer fewer features done well over many features done partially.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### II. Reliability Over Features
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+The incident tool itself MUST be highly available and fast. An incident management system that is down during an incident is worse than useless. Favor simple, proven technology choices that minimize failure modes.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### III. Test-First Development (NON-NEGOTIABLE)
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+All business logic MUST have tests written before implementation. Red-Green-Refactor cycle is strictly enforced. Every user story must have corresponding acceptance tests. No PR merges without passing tests.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### IV. Clear Data Model
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+Incidents are the core entity. Every incident MUST have: a unique identifier, title, severity, status, owner, timestamps, and a timeline of updates. The data model must be simple enough to reason about without documentation.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### V. Audit Trail
+
+Every state change on an incident MUST be recorded with a timestamp and actor. Incident data is append-only for timeline entries — history is never deleted or silently modified.
+
+### VI. Minimal Dependencies
+
+Use the smallest number of external libraries and services needed. Every dependency is a liability during an incident. Prefer standard library solutions where quality is comparable.
+
+## Technology Constraints
+
+- Web-based application (browser-accessible, no desktop/mobile native clients in v1)
+- Single deployable unit — no microservices for MVP
+- Persistent storage required (relational database preferred for structured incident data)
+- No external service integrations in v1 (Slack, PagerDuty, email — all deferred)
+
+## Quality Gates
+
+- All PRs require passing unit and integration tests
+- No known critical or high-severity bugs at release
+- Core workflows (create, triage, assign, resolve) must be manually verified before each release
+- API responses under 200ms for dashboard and incident list operations
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This constitution supersedes all other development practices. Amendments require explicit documentation, team discussion, and an updated version number below.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-04-22 | **Last Amended**: 2026-04-22
