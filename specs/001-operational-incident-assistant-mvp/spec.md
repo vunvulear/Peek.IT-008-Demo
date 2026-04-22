@@ -2,8 +2,44 @@
 
 **Feature Branch**: `001-operational-incident-assistant-mvp`  
 **Created**: 2026-04-22  
-**Status**: Draft  
+**Status**: Refined  
 **Input**: User description: "Create a lightweight Operational Incident Assistant for engineering teams to report, triage, assign, and track operational incidents."
+
+## Primary Users
+
+| Role | Uses the tool to… |
+|---|---|
+| **On-call engineer** | Report incidents, post updates, change status |
+| **Engineering lead / Incident commander** | Triage severity, assign owners, close incidents |
+| **Engineering manager** | Monitor dashboard, review operational state |
+
+No admin role in MVP. Users are pre-seeded via database script.
+
+## Core Business Problem
+
+When an incident occurs, teams lose time because there is no single place to report and track it, ownership is unclear, status is invisible (updates scatter across Slack/email), and there is no structured history for post-mortems. This tool provides one structured workflow: **Report → Triage → Investigate → Resolve → Close**.
+
+## MVP Scope
+
+### In scope (v1)
+
+- Create incident (title, description, severity, affected service)
+- Triage & assign (change severity, assign/reassign owner)
+- Status workflow (Open → Investigating → Resolved → Closed; any-to-any allowed)
+- Incident timeline (append-only log of all changes and notes)
+- Incident detail view (all fields + full timeline)
+- Dashboard (list view with filters and sort)
+- Simple auth (username-based login, no passwords)
+
+### Explicitly out of scope (v1)
+
+- In-app notifications (deferred to v2)
+- Slack/PagerDuty/email integrations
+- Role-based access control (RBAC)
+- Post-mortem / RCA workflows
+- SLA tracking and metrics dashboards
+- Mobile-responsive design
+- User management UI (users seeded via DB/script)
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -17,7 +53,7 @@ As an on-call engineer, I discover a production issue and need to report it imme
 
 **Acceptance Scenarios**:
 
-1. **Given** the user is on the dashboard, **When** they click "New Incident" and fill in title, description, severity (P1–P4), and affected service, **Then** the incident is created with status "Open", a unique ID is assigned, and a creation timestamp is recorded.
+1. **Given** the user is on the dashboard, **When** they click "New Incident" and fill in title, description, severity (P1–P4), and affected service, **Then** the incident is created with status "Open", a unique ID (INC-001) is assigned, and a creation timestamp is recorded.
 2. **Given** the user submits the form with a missing title, **When** they click submit, **Then** a validation error is shown and the incident is not created.
 3. **Given** the user creates an incident, **When** they return to the dashboard, **Then** the new incident appears at the top of the list.
 
@@ -65,26 +101,26 @@ As an engineering manager, I need to see all incidents in one place, filtered by
 
 **Acceptance Scenarios**:
 
-1. **Given** multiple incidents exist, **When** the user opens the dashboard, **Then** all incidents are listed showing ID, title, severity, status, owner, and last updated time.
+1. **Given** multiple incidents exist, **When** the user opens the dashboard, **Then** all incidents are listed showing ID, title, severity, status, owner, affected service, and last updated time.
 2. **Given** the dashboard is showing all incidents, **When** the user filters by status "Open", **Then** only open incidents are displayed.
 3. **Given** the dashboard is showing all incidents, **When** the user filters by severity "P1", **Then** only P1 incidents are displayed.
 4. **Given** the dashboard is showing results, **When** the user sorts by "Last Updated", **Then** incidents are ordered by most recently updated first.
 
 ---
 
-### User Story 5 - Receive In-App Notifications (Priority: P3)
+### User Story 5 - Log In with Username (Priority: P1)
 
-As an engineer, I want to be notified within the app when I am assigned to an incident or when an incident I own changes status, so I don't miss critical updates.
+As a team member, I need to identify myself so the system can record who reported, triaged, or updated each incident.
 
-**Why this priority**: Notifications improve responsiveness but the core workflow functions without them. This is a quality-of-life enhancement.
+**Why this priority**: Auth is required for audit trail (every action needs an actor). Without it, timeline entries have no attribution.
 
-**Independent Test**: Can be tested by assigning an incident to a user, then verifying a notification appears in that user's notification area.
+**Independent Test**: Can be tested by entering a valid username and verifying the user lands on the dashboard with their name displayed.
 
 **Acceptance Scenarios**:
 
-1. **Given** an incident is assigned to me, **When** I open the app, **Then** I see a notification indicating the assignment with incident ID and severity.
-2. **Given** I own an incident, **When** another user changes its status, **Then** I see a notification about the status change.
-3. **Given** I have unread notifications, **When** I view them, **Then** they are marked as read.
+1. **Given** the user is on the login page, **When** they enter a valid username, **Then** they are authenticated and redirected to the dashboard.
+2. **Given** the user enters a username that does not exist, **When** they submit, **Then** an error message is shown.
+3. **Given** the user is authenticated, **When** they click logout, **Then** they are returned to the login page.
 
 ---
 
@@ -92,32 +128,41 @@ As an engineer, I want to be notified within the app when I am assigned to an in
 
 - What happens when two users try to update the same incident simultaneously? → Last write wins; both timeline entries are preserved in order.
 - What happens when a user tries to assign an incident to a person who doesn't exist in the system? → Validation error; assignment rejected.
-- What happens when a user tries to transition directly from "Open" to "Closed"? → Allowed, but a timeline entry notes the skip with a warning.
+- What happens when a user tries to transition directly from "Open" to "Closed"? → Allowed; timeline entry records the direct transition.
 - What happens if the database is unavailable when creating an incident? → User sees an error message; no partial data is saved.
-- What happens with very long incident descriptions (>10,000 characters)? → Truncated at the limit with a validation message.
+- What happens with very long incident descriptions (>10,000 characters)? → Rejected at the limit with a validation message.
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
-- **FR-001**: System MUST allow users to create incidents with title (required), description, severity (P1–P4), and affected service.
-- **FR-002**: System MUST assign a unique auto-incrementing ID to each incident upon creation.
-- **FR-003**: System MUST support incident statuses: Open, Investigating, Resolved, Closed.
-- **FR-004**: System MUST allow assigning and reassigning an owner to an incident.
-- **FR-005**: System MUST record a timestamped, append-only timeline for every incident capturing all status changes, assignments, and user-posted notes.
-- **FR-006**: System MUST provide a dashboard listing all incidents with columns: ID, title, severity, status, owner, last updated.
-- **FR-007**: System MUST support filtering the dashboard by status and severity.
-- **FR-008**: System MUST support sorting the dashboard by last updated time.
-- **FR-009**: System MUST display in-app notifications for assignment and status change events.
-- **FR-010**: System MUST validate all required fields on incident creation and reject incomplete submissions.
-- **FR-011**: System MUST record the actor (username) and timestamp for every state change.
+- **FR-001**: System MUST allow creating incidents with: title (required, max 200 chars), description (optional, max 10,000 chars), severity (P1–P4, required), affected service (required, free text).
+- **FR-002**: System MUST assign a unique auto-incrementing ID (INC-001, INC-002…) to each incident upon creation.
+- **FR-003**: System MUST enforce status values: Open, Investigating, Resolved, Closed. Any-to-any transitions are allowed; each transition is logged.
+- **FR-004**: System MUST allow assigning and reassigning a single owner (existing user) to an incident.
+- **FR-005**: System MUST maintain an append-only timeline per incident, recording every status change, assignment, and user note with actor + UTC timestamp.
+- **FR-006**: System MUST provide a dashboard listing incidents with columns: ID, title, severity, status, owner, affected service, last updated.
+- **FR-007**: Dashboard MUST support filtering by status (multi-select) and severity (multi-select).
+- **FR-008**: Dashboard MUST support sorting by last updated (default: newest first).
+- **FR-009**: System MUST validate all required fields and return clear error messages on invalid input.
+- **FR-010**: System MUST support simple username-based authentication (login with username, no password for MVP).
+- **FR-011**: System MUST provide an incident detail view showing all fields and the full timeline.
+
+### Non-Functional Requirements
+
+- **NFR-001**: Dashboard MUST load ≤100 incidents in under 200ms (server response time).
+- **NFR-002**: System MUST be a single deployable unit (monolith, no microservices).
+- **NFR-003**: System MUST use a relational database for persistent storage.
+- **NFR-004**: System MUST support up to 50 concurrent users and 1,000 active incidents.
+- **NFR-005**: All timestamps MUST be stored and displayed in UTC.
+- **NFR-006**: System MUST be accessible via modern desktop browsers (Chrome, Firefox, Edge).
+- **NFR-007**: System MUST handle concurrent updates gracefully (last-write-wins; no data loss on timeline).
 
 ### Key Entities
 
-- **Incident**: The core entity — represents a single operational event. Attributes: id, title, description, severity (P1–P4), status (Open/Investigating/Resolved/Closed), owner, affected service, created_at, updated_at.
-- **Timeline Entry**: An immutable log entry attached to an incident. Attributes: id, incident_id, actor, action_type (status_change/assignment/note), content, created_at.
-- **User**: A team member who can create, own, and update incidents. Attributes: id, username, display_name.
-- **Notification**: An in-app alert for a specific user. Attributes: id, user_id, incident_id, message, read, created_at.
+- **Incident**: Core entity. Attributes: id, title, description, severity (P1–P4), status (Open/Investigating/Resolved/Closed), owner, affected_service, created_by, created_at, updated_at.
+- **Timeline Entry**: Immutable log entry. Attributes: id, incident_id, actor, action_type (status_change/assignment/note), content, created_at.
+- **User**: Team member. Attributes: id, username, display_name.
 
 ## Success Criteria *(mandatory)*
 
@@ -132,8 +177,9 @@ As an engineer, I want to be notified within the app when I am assigned to an in
 ## Assumptions
 
 - Users are members of the same engineering organization and have browser access.
-- Authentication is simple (username-based for MVP; no SSO/OAuth in v1).
+- Authentication is username-only for MVP (no passwords, no SSO/OAuth).
 - The system will be used by teams of up to 50 people with up to 1,000 active incidents.
 - Mobile-responsive design is not required for v1 (desktop browser is primary).
 - No external integrations (Slack, PagerDuty, email) in v1.
-- A single time zone is sufficient for MVP (timestamps in UTC).
+- All timestamps in UTC.
+- Users are pre-seeded; no self-registration or user management UI.
